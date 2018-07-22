@@ -32,9 +32,17 @@ const CreateTeam = observer(({ createTeam, history }) => {
   const errorList = [nameError].filter(err => !!err);
 
   const onSubmit = async () => {
-    const response = await createTeam({
-      variables: { name }
-    });
+    let response = null;
+
+    try {
+      response = await createTeam({
+        variables: { name }
+      });
+    } catch (err) {
+      history.push('/login');
+      return;
+    }
+
     const { ok, errors } = response.data.createTeam;
     if (ok) {
       history.push('/');
