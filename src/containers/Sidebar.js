@@ -22,19 +22,24 @@ const ALL_TEAMS = gql`
 
 const Sidebar = ({ currentTeamId }) => (
   <Query query={ALL_TEAMS}>
-    {({ loading, error, data: { allTeams } }) => {
+    {({ loading, error, data }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
+
+      const { allTeams } = data;
 
       const teamIdx = _.findIndex(allTeams, ['id', currentTeamId]);
       const team = allTeams[teamIdx];
 
-      let username = '';
-      try {
-        const token = localStorage.getItem('token');
-        const { user } = decode(token);
-        username = user.username;
-      } catch (err) {}
+      const username = (() => {
+        try {
+          const token = localStorage.getItem('token');
+          const { user } = decode(token);
+          return user.username;
+        } catch (err) {
+          return '';
+        }
+      })();
 
       return (
         <React.Fragment>
