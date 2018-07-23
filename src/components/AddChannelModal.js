@@ -5,10 +5,19 @@ import {
 import { Formik } from 'formik';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import findIndex from 'lodash/findIndex';
+
+import { ALL_TEAMS } from '../graphql/team';
 
 const CREATE_CHANNEL = gql`
-  mutation($teamId: Int!, $name: String!) {
-    createChannel(teamId: $teamId, name: $name)
+  mutation ($teamId: Int!, $name: String!) {
+    createChannel(teamId: $teamId, name: $name) {
+      ok
+      channel {
+        id
+        name
+      }
+    }
   }
 `;
 
@@ -59,7 +68,31 @@ export default ({ open, onClose, teamId }) => (
           name: ''
         }}
         onSubmit={async (values, { setSubmitting }) => {
-          await createChannel({ variables: { teamId, name: values.name } });
+          await createChannel({ variables: { teamId, name: values.name },
+            optimisticResponse: {
+              createChannel: {
+                __typename: 'Mutation',
+                ok: true,
+                channel: {
+                  __typename: 'Channel',
+                  id: -1,
+                  name: values.name
+                }
+              }
+            },
+            update: (proxy, { data: { createChannel } }) => {
+              const { ok, channel } = createChannel;
+              if (!ok) {
+                return;
+              }
+
+              const data = proxy.readQuery({ query: ALL_TEAMS });
+              console.log(data);
+              const teamIdx = findIndex(data.allTeams, ['id', teamId]);
+              data.allTeams[teamIdx].channels.push(channel);
+              proxy.writeQuery({ query: ALL_TEAMS, data });
+            }}
+          );
           onClose();
           setSubmitting(false);
         }}
