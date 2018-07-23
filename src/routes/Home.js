@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
 const ALL_USERS = gql`
-  {
+  query allUsers {
     allUsers {
       id
       email

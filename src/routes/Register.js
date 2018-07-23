@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
 const REGISTER_USER = gql`
-  mutation($username: String!, $password: String!, $email: String!) {
+  mutation register($username: String!, $password: String!, $email: String!) {
     register(username: $username, password: $password, email: $email) {
       ok
       errors {
@@ -34,12 +34,13 @@ class Register extends React.Component {
       emailError: ''
     });
     const { username, email, password } = this.state;
-    const response = await this.props.registerUser({ variables: { username, email, password } });
+    const { registerUser, history } = this.props;
+    const response = await registerUser({ variables: { username, email, password } });
 
     const { ok, errors } = response.data.register;
 
     if (ok) {
-      this.props.history.push('/');
+      history.push('/');
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {

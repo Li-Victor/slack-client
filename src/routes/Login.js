@@ -14,7 +14,7 @@ const state = observable({
 });
 
 const LOGIN_USER = gql`
-  mutation($email: String!, $password: String!) {
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       ok
       token

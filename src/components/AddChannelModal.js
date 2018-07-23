@@ -10,7 +10,7 @@ import findIndex from 'lodash/findIndex';
 import { ALL_TEAMS } from '../graphql/team';
 
 const CREATE_CHANNEL = gql`
-  mutation ($teamId: Int!, $name: String!) {
+  mutation createChannel($teamId: Int!, $name: String!) {
     createChannel(teamId: $teamId, name: $name) {
       ok
       channel {
@@ -68,7 +68,8 @@ export default ({ open, onClose, teamId }) => (
           name: ''
         }}
         onSubmit={async (values, { setSubmitting }) => {
-          await createChannel({ variables: { teamId, name: values.name },
+          await createChannel({
+            variables: { teamId, name: values.name },
             optimisticResponse: {
               createChannel: {
                 __typename: 'Mutation',
@@ -91,8 +92,8 @@ export default ({ open, onClose, teamId }) => (
               const teamIdx = findIndex(data.allTeams, ['id', teamId]);
               data.allTeams[teamIdx].channels.push(channel);
               proxy.writeQuery({ query: ALL_TEAMS, data });
-            }}
-          );
+            }
+          });
           onClose();
           setSubmitting(false);
         }}

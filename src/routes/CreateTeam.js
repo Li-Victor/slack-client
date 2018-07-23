@@ -13,7 +13,7 @@ const state = observable({
 });
 
 const CREATE_TEAM = gql`
-  mutation($name: String!) {
+  mutation createTeam($name: String!) {
     createTeam(name: $name) {
       ok
       team {
@@ -68,7 +68,7 @@ const CreateTeam = observer(({ createTeam, history }) => {
 Create a Team
       </Header>
       <Form>
-        <Form.Field error={!!state.errors.emailError}>
+        <Form.Field error={!!state.errors.nameError}>
           <Input name="name" onChange={onChange} value={state.name} placeholder="Name" fluid />
         </Form.Field>
 
