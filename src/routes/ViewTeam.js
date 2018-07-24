@@ -4,10 +4,10 @@ import findIndex from 'lodash/findIndex';
 import { Redirect } from 'react-router-dom';
 
 import Header from '../components/Header';
-import Messages from '../components/Messages';
 import SendMessage from '../components/SendMessage';
 import AppLayout from '../components/AppLayout';
 import Sidebar from '../containers/Sidebar';
+import MessageContainer from '../containers/MessageContainer';
 import { ALL_TEAMS } from '../graphql/team';
 
 const ViewTeam = ({ channel, team, teams }) => (
@@ -23,13 +23,8 @@ const ViewTeam = ({ channel, team, teams }) => (
     {channel && (
       <React.Fragment>
         <Header channelName={channel.name} />
-        <Messages channelId={channel.id}>
-          <ul className="message-list">
-            <li />
-            <li />
-          </ul>
-        </Messages>
-        <SendMessage channelName={channel.name} />
+        <MessageContainer channelId={channel.id} />
+        <SendMessage channelName={channel.name} channelId={channel.id} />
       </React.Fragment>
     )}
   </AppLayout>
