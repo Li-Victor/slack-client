@@ -67,7 +67,14 @@ const user = ({ id, name }) => (
 );
 
 export default ({
-  teamName, username, channels, users, onAddChannelClick, teamId, onInvitePeopleClick, isOwner
+  teamName,
+  username,
+  channels,
+  users,
+  onAddChannelClick,
+  teamId,
+  onInvitePeopleClick,
+  isOwner
 }) => (
   <ChannelWrapper>
     <PushLeft>
@@ -98,10 +105,11 @@ Direct Messages
     </React.Fragment>
 
     <React.Fragment>
-      {isOwner && <a href="#invite-people" onClick={onInvitePeopleClick}>
-        + Invite People
-      </a>}
-
+      {isOwner && (
+        <a href="#invite-people" onClick={onInvitePeopleClick}>
+          + Invite People
+        </a>
+      )}
     </React.Fragment>
   </ChannelWrapper>
 );

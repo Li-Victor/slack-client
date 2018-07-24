@@ -50,7 +50,11 @@ const httpLinkWithMiddleware = ApolloLink.from([
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost:5000/subscriptions',
   options: {
-    reconnect: true
+    reconnect: true,
+    connectionParams: {
+      token: localStorage.getItem('token'),
+      refreshToken: localStorage.getItem('refreshToken')
+    }
   }
 });
 
