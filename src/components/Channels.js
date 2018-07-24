@@ -67,7 +67,7 @@ const user = ({ id, name }) => (
 );
 
 export default ({
-  teamName, username, channels, users, onAddChannelClick, teamId, onInvitePeopleClick
+  teamName, username, channels, users, onAddChannelClick, teamId, onInvitePeopleClick, isOwner
 }) => (
   <ChannelWrapper>
     <PushLeft>
@@ -82,7 +82,7 @@ export default ({
         <SideBarListHeader>
           Channels
           {' '}
-          <Icon name="add circle" onClick={onAddChannelClick} />
+          {isOwner && <Icon name="add circle" onClick={onAddChannelClick} />}
         </SideBarListHeader>
         {channels.map(c => channel(c, teamId))}
       </SideBarList>
@@ -98,9 +98,10 @@ Direct Messages
     </React.Fragment>
 
     <React.Fragment>
-      <a href="#invite-people" onClick={onInvitePeopleClick}>
+      {isOwner && <a href="#invite-people" onClick={onInvitePeopleClick}>
         + Invite People
-      </a>
+      </a>}
+
     </React.Fragment>
   </ChannelWrapper>
 );

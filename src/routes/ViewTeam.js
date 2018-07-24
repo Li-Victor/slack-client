@@ -10,10 +10,10 @@ import AppLayout from '../components/AppLayout';
 import Sidebar from '../containers/Sidebar';
 import { ALL_TEAMS } from '../graphql/team';
 
-const ViewTeam = ({ channel, team, allTeams }) => (
+const ViewTeam = ({ channel, team, teams }) => (
   <AppLayout>
     <Sidebar
-      teams={allTeams.map(t => ({
+      teams={teams.map(t => ({
         id: t.id,
         letter: t.name.charAt(0).toUpperCase()
       }))}
@@ -45,21 +45,23 @@ export default ({
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
 
-      const { allTeams } = data;
+      const { allTeams, inviteTeams } = data;
 
-      if (allTeams.length === 0) {
+      const teams = [...allTeams, ...inviteTeams];
+
+      if (teams.length === 0) {
         return <Redirect to="/create-team" />;
       }
 
       const teamIdInteger = parseInt(teamId, 10);
-      const teamIdx = teamIdInteger ? findIndex(allTeams, ['id', teamIdInteger]) : 0;
-      const team = allTeams[teamIdx];
+      const teamIdx = teamIdInteger ? findIndex(teams, ['id', teamIdInteger]) : 0;
+      const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
 
       const channelIdInteger = parseInt(channelId, 10);
       const channelIdx = channelIdInteger ? findIndex(team.channels, ['id', channelIdInteger]) : 0;
-      const channel = team.channels[channelIdx];
+      const channel = channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
 
-      return <ViewTeam channel={channel} team={team} allTeams={allTeams} />;
+      return <ViewTeam channel={channel} team={team} teams={teams} />;
     }}
   </Query>
 );

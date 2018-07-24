@@ -12,30 +12,26 @@ class Sidebar extends React.Component {
     openInvitePeopleModal: false
   };
 
-  handleAddChannelClick = () => {
-    this.setState({ openAddChannelModal: true });
+  toggleAddChannelModal = e => {
+    if (e) e.preventDefault();
+    this.setState(state => ({ openAddChannelModal: !state.openAddChannelModal }));
   };
 
-  handleCloseAddAddChannelModel = () => {
-    this.setState({ openAddChannelModal: false });
-  };
-
-  handleInvitePeopleClick = () => {
-    this.setState({ openInvitePeopleModal: true });
-  };
-
-  handleCloseInvitePeopleModal = () => {
-    this.setState({ openInvitePeopleModal: false });
+  toggleInvitePeopleModal = e => {
+    if (e) e.preventDefault();
+    this.setState(state => ({ openInvitePeopleModal: !state.openInvitePeopleModal }));
   };
 
   render() {
     const { teams, team } = this.props;
     const { openAddChannelModal, openInvitePeopleModal } = this.state;
 
+    let isOwner = false;
     const username = (() => {
       try {
         const token = localStorage.getItem('token');
         const { user } = decode(token);
+        isOwner = user.id === team.owner;
         return user.username;
       } catch (err) {
         return '';
@@ -64,20 +60,21 @@ class Sidebar extends React.Component {
               name: 'user1'
             }
           ]}
-          onAddChannelClick={this.handleAddChannelClick}
-          onInvitePeopleClick={this.handleInvitePeopleClick}
+          onAddChannelClick={this.toggleAddChannelModal}
+          onInvitePeopleClick={this.toggleInvitePeopleModal}
+          isOwner={isOwner}
         >
           Channels
         </Channels>
         <AddChannelModal
           open={openAddChannelModal}
           teamId={team.id}
-          onClose={this.handleCloseAddAddChannelModel}
+          onClose={this.toggleAddChannelModal}
         />
         <InvitePeopleModal
           open={openInvitePeopleModal}
           teamId={team.id}
-          onClose={this.handleCloseInvitePeopleModal}
+          onClose={this.toggleInvitePeopleModal}
         />
       </React.Fragment>
     );
