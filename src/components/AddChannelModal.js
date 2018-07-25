@@ -4,22 +4,9 @@ import {
 } from 'semantic-ui-react';
 import { Formik } from 'formik';
 import { Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
 import findIndex from 'lodash/findIndex';
 
-import { ALL_TEAMS } from '../graphql/team';
-
-const CREATE_CHANNEL = gql`
-  mutation createChannel($teamId: Int!, $name: String!) {
-    createChannel(teamId: $teamId, name: $name) {
-      ok
-      channel {
-        id
-        name
-      }
-    }
-  }
-`;
+import { ME_QUERY, CREATE_CHANNEL_MUTATION } from '../graphql/team';
 
 const AddChannelModal = ({
   open,
@@ -61,7 +48,7 @@ Add Channel
 );
 
 export default ({ open, onClose, teamId }) => (
-  <Mutation mutation={CREATE_CHANNEL}>
+  <Mutation mutation={CREATE_CHANNEL_MUTATION}>
     {createChannel => (
       <Formik
         initialValues={{
@@ -87,11 +74,11 @@ export default ({ open, onClose, teamId }) => (
                 return;
               }
 
-              const data = proxy.readQuery({ query: ALL_TEAMS });
+              const data = proxy.readQuery({ query: ME_QUERY });
               console.log(data);
-              const teamIdx = findIndex(data.allTeams, ['id', teamId]);
-              data.allTeams[teamIdx].channels.push(channel);
-              proxy.writeQuery({ query: ALL_TEAMS, data });
+              const teamIdx = findIndex(data.me.teams, ['id', teamId]);
+              data.me.teams[teamIdx].channels.push(channel);
+              proxy.writeQuery({ query: ME_QUERY, data });
             }
           });
           onClose();

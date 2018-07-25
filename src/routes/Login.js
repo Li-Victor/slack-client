@@ -4,28 +4,15 @@ import { observer } from 'mobx-react';
 import {
   Button, Container, Form, Header, Input, Message
 } from 'semantic-ui-react';
-import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+
+import { LOGIN_USER_MUTATION } from '../graphql/team';
 
 const state = observable({
   email: '',
   password: '',
   errors: {}
 });
-
-const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      ok
-      token
-      refreshToken
-      errors {
-        path
-        message
-      }
-    }
-  }
-`;
 
 const Login = observer(({ loginUser, history }) => {
   const {
@@ -91,7 +78,7 @@ Submit
 });
 
 export default ({ history }) => (
-  <Mutation mutation={LOGIN_USER}>
+  <Mutation mutation={LOGIN_USER_MUTATION}>
     {loginUser => <Login loginUser={loginUser} history={history} />}
   </Mutation>
 );

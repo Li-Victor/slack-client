@@ -1,23 +1,124 @@
 import gql from 'graphql-tag';
 
-export const ALL_TEAMS = gql`
-  query allTeams {
-    allTeams {
+export const ME_QUERY = gql`
+  query me {
+    me {
       id
-      name
-      owner
-      channels {
+      username
+      teams {
+        id
+        name
+        admin
+        channels {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const CREATE_CHANNEL_MUTATION = gql`
+  mutation createChannel($teamId: Int!, $name: String!) {
+    createChannel(teamId: $teamId, name: $name) {
+      ok
+      channel {
         id
         name
       }
     }
-    inviteTeams {
+  }
+`;
+
+export const NEW_CHANNEL_SUBSCRIPTION = gql`
+  subscription newChannelMessage($channelId: Int!) {
+    newChannelMessage(channelId: $channelId) {
       id
-      name
-      owner
-      channels {
+      text
+      user {
+        username
+      }
+      created_at
+    }
+  }
+`;
+
+export const MESSAGES_QUERY = gql`
+  query messages($channelId: Int!) {
+    messages(channelId: $channelId) {
+      id
+      text
+      user {
+        username
+      }
+      created_at
+    }
+  }
+`;
+
+export const CREATE_TEAM_MUTATION = gql`
+  mutation createTeam($name: String!) {
+    createTeam(name: $name) {
+      ok
+      team {
         id
-        name
+      }
+      errors {
+        path
+        message
+      }
+    }
+  }
+`;
+
+export const CREATE_MESSAGE_MUTATION = gql`
+  mutation createMessage($channelId: Int!, $text: String!) {
+    createMessage(channelId: $channelId, text: $text)
+  }
+`;
+
+export const ALL_USERS_QUERY = gql`
+  query allUsers {
+    allUsers {
+      id
+      email
+    }
+  }
+`;
+
+export const LOGIN_USER_MUTATION = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      ok
+      token
+      refreshToken
+      errors {
+        path
+        message
+      }
+    }
+  }
+`;
+
+export const REGISTER_USER_MUTATION = gql`
+  mutation register($username: String!, $password: String!, $email: String!) {
+    register(username: $username, password: $password, email: $email) {
+      ok
+      errors {
+        path
+        message
+      }
+    }
+  }
+`;
+
+export const ADD_TEAM_MEMBER_MUTATION = gql`
+  mutation addTeamMember($email: String!, $teamId: Int!) {
+    addTeamMember(email: $email, teamId: $teamId) {
+      ok
+      errors {
+        path
+        message
       }
     }
   }

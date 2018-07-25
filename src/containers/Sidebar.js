@@ -1,5 +1,4 @@
 import React from 'react';
-import decode from 'jwt-decode';
 
 import Teams from '../components/Teams';
 import Channels from '../components/Channels';
@@ -23,20 +22,8 @@ class Sidebar extends React.Component {
   };
 
   render() {
-    const { teams, team } = this.props;
+    const { teams, team, username } = this.props;
     const { openAddChannelModal, openInvitePeopleModal } = this.state;
-
-    let isOwner = false;
-    const username = (() => {
-      try {
-        const token = localStorage.getItem('token');
-        const { user } = decode(token);
-        isOwner = user.id === team.owner;
-        return user.username;
-      } catch (err) {
-        return '';
-      }
-    })();
 
     return (
       <React.Fragment>
@@ -62,7 +49,7 @@ class Sidebar extends React.Component {
           ]}
           onAddChannelClick={this.toggleAddChannelModal}
           onInvitePeopleClick={this.toggleInvitePeopleModal}
-          isOwner={isOwner}
+          isOwner={team.admin}
         >
           Channels
         </Channels>

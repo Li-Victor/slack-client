@@ -4,21 +4,9 @@ import {
 } from 'semantic-ui-react';
 import { Formik } from 'formik';
 import { Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
 
+import { ADD_TEAM_MEMBER_MUTATION } from '../graphql/team';
 import normalizeErrors from '../normalizeErrors';
-
-const ADD_TEAM_MEMBER = gql`
-  mutation addTeamMember($email: String!, $teamId: Int!) {
-    addTeamMember(email: $email, teamId: $teamId) {
-      ok
-      errors {
-        path
-        message
-      }
-    }
-  }
-`;
 
 const AddChannelModal = ({
   open,
@@ -62,7 +50,7 @@ Add People to your Team
 );
 
 export default ({ open, onClose, teamId }) => (
-  <Mutation mutation={ADD_TEAM_MEMBER}>
+  <Mutation mutation={ADD_TEAM_MEMBER_MUTATION}>
     {addTeamMember => (
       <Formik
         initialValues={{

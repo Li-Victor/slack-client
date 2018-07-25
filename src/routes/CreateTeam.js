@@ -4,28 +4,14 @@ import { observer } from 'mobx-react';
 import {
   Button, Container, Form, Header, Input, Message
 } from 'semantic-ui-react';
-import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+
+import { CREATE_TEAM_MUTATION } from '../graphql/team';
 
 const state = observable({
   name: '',
   errors: {}
 });
-
-const CREATE_TEAM = gql`
-  mutation createTeam($name: String!) {
-    createTeam(name: $name) {
-      ok
-      team {
-        id
-      }
-      errors {
-        path
-        message
-      }
-    }
-  }
-`;
 
 const CreateTeam = observer(({ createTeam, history }) => {
   const {
@@ -84,7 +70,7 @@ Submit
 });
 
 export default ({ history }) => (
-  <Mutation mutation={CREATE_TEAM}>
+  <Mutation mutation={CREATE_TEAM_MUTATION}>
     {createTeam => <CreateTeam createTeam={createTeam} history={history} />}
   </Mutation>
 );

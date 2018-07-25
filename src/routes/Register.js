@@ -2,20 +2,9 @@ import React from 'react';
 import {
   Button, Container, Form, Header, Input, Message
 } from 'semantic-ui-react';
-import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
-const REGISTER_USER = gql`
-  mutation register($username: String!, $password: String!, $email: String!) {
-    register(username: $username, password: $password, email: $email) {
-      ok
-      errors {
-        path
-        message
-      }
-    }
-  }
-`;
+import { REGISTER_USER_MUTATION } from '../graphql/team';
 
 class Register extends React.Component {
   state = {
@@ -103,7 +92,7 @@ Submit
 }
 
 export default ({ history }) => (
-  <Mutation mutation={REGISTER_USER}>
+  <Mutation mutation={REGISTER_USER_MUTATION}>
     {registerUser => <Register registerUser={registerUser} history={history} />}
   </Mutation>
 );

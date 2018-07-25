@@ -1,18 +1,10 @@
 import React from 'react';
-import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
-const ALL_USERS = gql`
-  query allUsers {
-    allUsers {
-      id
-      email
-    }
-  }
-`;
+import { ALL_USERS_QUERY } from '../graphql/team';
 
 const Home = () => (
-  <Query query={ALL_USERS}>
+  <Query query={ALL_USERS_QUERY}>
     {({ loading, error, data }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;

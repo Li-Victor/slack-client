@@ -1,35 +1,9 @@
 import React from 'react';
 import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import { Comment } from 'semantic-ui-react';
 
+import { NEW_CHANNEL_SUBSCRIPTION, MESSAGES_QUERY } from '../graphql/team';
 import Messages from '../components/Messages';
-
-const NEW_CHANNEL_SUBSCRIPTION = gql`
-  subscription newChannelMessage($channelId: Int!) {
-    newChannelMessage(channelId: $channelId) {
-      id
-      text
-      user {
-        username
-      }
-      created_at
-    }
-  }
-`;
-
-const MESSAGES = gql`
-  query messages($channelId: Int!) {
-    messages(channelId: $channelId) {
-      id
-      text
-      user {
-        username
-      }
-      created_at
-    }
-  }
-`;
 
 class MessageContainer extends React.Component {
   constructor(props) {
@@ -81,7 +55,7 @@ Reply
 }
 
 export default ({ channelId }) => (
-  <Query query={MESSAGES} variables={{ channelId }} fetchPolicy="network-only">
+  <Query query={MESSAGES_QUERY} variables={{ channelId }} fetchPolicy="network-only">
     {({
       loading, error, data, subscribeToMore, ...result
     }) => {
