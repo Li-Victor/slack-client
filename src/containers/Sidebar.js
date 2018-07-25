@@ -4,11 +4,18 @@ import Teams from '../components/Teams';
 import Channels from '../components/Channels';
 import AddChannelModal from '../components/AddChannelModal';
 import InvitePeopleModal from '../components/InvitePeopleModal';
+import DirectMessageModal from '../components/DirectMessageModal';
 
 class Sidebar extends React.Component {
   state = {
     openAddChannelModal: false,
-    openInvitePeopleModal: false
+    openInvitePeopleModal: false,
+    openDirectMessageModal: false
+  };
+
+  toggleDirectMessageModal = e => {
+    if (e) e.preventDefault();
+    this.setState(state => ({ openDirectMessageModal: !state.openDirectMessageModal }));
   };
 
   toggleAddChannelModal = e => {
@@ -23,7 +30,7 @@ class Sidebar extends React.Component {
 
   render() {
     const { teams, team, username } = this.props;
-    const { openAddChannelModal, openInvitePeopleModal } = this.state;
+    const { openAddChannelModal, openInvitePeopleModal, openDirectMessageModal } = this.state;
 
     return (
       <React.Fragment>
@@ -37,18 +44,10 @@ class Sidebar extends React.Component {
           username={username}
           teamId={team.id}
           channels={team.channels}
-          users={[
-            {
-              id: 1,
-              name: 'slackbot'
-            },
-            {
-              id: 2,
-              name: 'user1'
-            }
-          ]}
+          users={team.directMessageMembers}
           onAddChannelClick={this.toggleAddChannelModal}
           onInvitePeopleClick={this.toggleInvitePeopleModal}
+          onDirectMessageCick={this.toggleDirectMessageModal}
           isOwner={team.admin}
         >
           Channels
@@ -62,6 +61,11 @@ class Sidebar extends React.Component {
           open={openInvitePeopleModal}
           teamId={team.id}
           onClose={this.toggleInvitePeopleModal}
+        />
+        <DirectMessageModal
+          open={openDirectMessageModal}
+          teamId={team.id}
+          onClose={this.toggleDirectMessageModal}
         />
       </React.Fragment>
     );
