@@ -7,14 +7,14 @@ import Header from '../components/Header';
 import SendMessage from '../components/SendMessage';
 import AppLayout from '../components/AppLayout';
 import Sidebar from '../containers/Sidebar';
-import MessageContainer from '../containers/MessageContainer';
-import { ME_QUERY, CREATE_MESSAGE_MUTATION } from '../graphql/team';
+import DirectMessageContainer from '../containers/DirectMessageContainer';
+import { ME_QUERY, CREATE_DIRECTMESSAGE_MUTATION } from '../graphql/team';
 
 const DirectMessages = ({
-  team, teams, username, userId
+  team, teams, username, userId, teamId
 }) => (
-  <Mutation mutation={CREATE_MESSAGE_MUTATION}>
-    {createMessage => (
+  <Mutation mutation={CREATE_DIRECTMESSAGE_MUTATION}>
+    {createDirectMessage => (
       <AppLayout>
         <Sidebar
           teams={teams.map(t => ({
@@ -25,11 +25,21 @@ const DirectMessages = ({
           username={username}
         />
 
-        <React.Fragment>
-          {/* <Header channelName={channel.name} />
-      <MessageContainer channelId={channel.id} /> */}
-          <SendMessage onSubmit={() => {}} placeholder={userId} />
-        </React.Fragment>
+        <Header channelName="Someone's username" />
+        <DirectMessageContainer teamId={teamId} userId={userId} />
+        <SendMessage
+          onSubmit={async text => {
+            const response = await createDirectMessage({
+              variables: {
+                text,
+                receiverId: userId,
+                teamId
+              }
+            });
+            console.log(response);
+          }}
+          placeholder={userId}
+        />
       </AppLayout>
     )}
   </Mutation>
@@ -56,7 +66,15 @@ export default ({
       const teamIdx = teamIdInteger ? findIndex(teams, ['id', teamIdInteger]) : 0;
       const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
 
-      return <DirectMessages team={team} teams={teams} username={username} userId={userId} />;
+      return (
+        <DirectMessages
+          team={team}
+          teams={teams}
+          username={username}
+          userId={userId}
+          teamId={teamId}
+        />
+      );
     }}
   </Query>
 );

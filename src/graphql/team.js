@@ -123,3 +123,22 @@ export const ADD_TEAM_MEMBER_MUTATION = gql`
     }
   }
 `;
+
+export const CREATE_DIRECTMESSAGE_MUTATION = gql`
+  mutation createDirectMessage($receiverId: Int!, $text: String!, $teamId: Int!) {
+    createDirectMessage(receiverId: $receiverId, text: $text, teamId: $teamId)
+  }
+`;
+
+export const DIRECTMESSAGES_QUERY = gql`
+  query directMessages($teamId: Int!, $userId: Int!) {
+    directMessages(teamId: $teamId, otherUserId: $userId) {
+      id
+      sender {
+        username
+      }
+      text
+      created_at
+    }
+  }
+`;
