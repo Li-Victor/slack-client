@@ -8,10 +8,10 @@ import SendMessage from '../components/SendMessage';
 import AppLayout from '../components/AppLayout';
 import Sidebar from '../containers/Sidebar';
 import DirectMessageContainer from '../containers/DirectMessageContainer';
-import { ME_QUERY, CREATE_DIRECTMESSAGE_MUTATION } from '../graphql/team';
+import { ME_QUERY, DIRECT_MESSAGE_ME_QUERY, CREATE_DIRECTMESSAGE_MUTATION } from '../graphql/team';
 
 const DirectMessages = ({
-  team, teams, username, userId, teamId
+  team, teams, username, userId, teamId, getUser
 }) => (
   <Mutation mutation={CREATE_DIRECTMESSAGE_MUTATION}>
     {createDirectMessage => (
@@ -25,8 +25,8 @@ const DirectMessages = ({
           username={username}
         />
 
-        <Header channelName="Someone's username" />
-        <DirectMessageContainer teamId={teamId} userId={userId} />
+        <Header channelName={getUser.username} />
+        <DirectMessageContainer teamId={team.id} userId={userId} />
         <SendMessage
           onSubmit={async text => {
             const response = await createDirectMessage({
@@ -34,6 +34,25 @@ const DirectMessages = ({
                 text,
                 receiverId: userId,
                 teamId
+              },
+              optimisticResponse: {
+                createDirectMessage: true
+              },
+              update: store => {
+                const data = store.readQuery({ query: ME_QUERY });
+                const teamIdx = findIndex(data.me.teams, ['id', team.id]);
+                const notAlreadyThere = data.me.teams[teamIdx].directMessageMembers.every(
+                  member => member.id !== parseInt(userId, 10)
+                );
+
+                if (notAlreadyThere) {
+                  data.me.teams[teamIdx].directMessageMembers.push({
+                    __typename: 'User',
+                    id: userId,
+                    username: getUser.username
+                  });
+                  store.writeQuery({ query: ME_QUERY, data });
+                }
               }
             });
             console.log(response);
@@ -50,12 +69,12 @@ export default ({
     params: { teamId, userId }
   }
 }) => (
-  <Query query={ME_QUERY} fetchPolicy="network-only">
+  <Query query={DIRECT_MESSAGE_ME_QUERY} variables={{ userId }} fetchPolicy="network-only">
     {({ loading, error, data }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
 
-      const { me } = data;
+      const { me, getUser } = data;
       const { teams, username } = me;
 
       if (teams.length === 0) {
@@ -73,6 +92,7 @@ export default ({
           username={username}
           userId={userId}
           teamId={teamId}
+          getUser={getUser}
         />
       );
     }}

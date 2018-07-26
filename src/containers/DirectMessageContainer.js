@@ -3,18 +3,28 @@ import { Comment } from 'semantic-ui-react';
 import { Query } from 'react-apollo';
 
 import Messages from '../components/Messages';
-import { DIRECTMESSAGES_QUERY } from '../graphql/team';
+import { DIRECTMESSAGES_QUERY, NEW_DIRECTMESSAGE_SUBSCRIPTION } from '../graphql/team';
 
 class DirectMessageContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    const { subscribeToNewDirectMessages } = this.props;
+    this.state = {
+      unsubscribe: (() => subscribeToNewDirectMessages())()
+    };
+  }
+
+  componentWillUnmount() {
+    const { unsubscribe } = this.state;
+    if (unsubscribe) {
+      unsubscribe();
+    }
   }
 
   render() {
-    const { directMessages } = this.props;
+    const { directMessages, teamId, userId } = this.props;
     return (
-      <Messages>
+      <Messages key={[teamId, userId]}>
         <Comment.Group>
           {directMessages.map(m => (
             <Comment key={`${m.id}-direct-message`}>
@@ -46,12 +56,35 @@ Reply
 
 export default ({ teamId, userId }) => (
   <Query query={DIRECTMESSAGES_QUERY} variables={{ teamId, userId }} fetchPolicy="network-only">
-    {({ loading, error, data }) => {
+    {({
+      loading, error, data, subscribeToMore, ...result
+    }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
 
       const { directMessages } = data;
-      return <DirectMessageContainer directMessages={directMessages} />;
+      return (
+        <DirectMessageContainer
+          directMessages={directMessages}
+          {...result}
+          subscribeToNewDirectMessages={() => subscribeToMore({
+            document: NEW_DIRECTMESSAGE_SUBSCRIPTION,
+            variables: {
+              teamId,
+              userId
+            },
+            updateQuery: (prev, { subscriptionData }) => {
+              if (!subscriptionData.data) return prev;
+              const { newDirectMessage } = subscriptionData.data;
+              return {
+                ...prev,
+                directMessages: [...prev.directMessages, newDirectMessage]
+              };
+            }
+          })
+          }
+        />
+      );
     }}
   </Query>
 );

@@ -155,3 +155,41 @@ export const GET_TEAMMEMBERS_QUERY = gql`
     }
   }
 `;
+
+export const DIRECT_MESSAGE_ME_QUERY = gql`
+  query directMessageMe($userId: Int!) {
+    getUser(userId: $userId) {
+      username
+    }
+    me {
+      id
+      username
+      teams {
+        id
+        name
+        admin
+        directMessageMembers {
+          id
+          username
+        }
+        channels {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const NEW_DIRECTMESSAGE_SUBSCRIPTION = gql`
+  subscription newDirectMessage($teamId: Int!, $userId: Int!) {
+    newDirectMessage(teamId: $teamId, userId: $userId) {
+      id
+      sender {
+        username
+      }
+      text
+      created_at
+    }
+  }
+`;
