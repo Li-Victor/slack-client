@@ -64,30 +64,18 @@ export default ({ open, onClose, teamId }) => (
             setSubmitting(false);
           } else {
             setSubmitting(false);
-            setErrors(normalizeErrors(errors));
+            const errorsLength = errors.length;
+            const filteredErrors = errors.filter(e => e.message !== 'user_id must be unique');
+            if (errorsLength !== filteredErrors.length) {
+              filteredErrors.push({
+                path: 'email',
+                message: 'this user is already part of the team'
+              });
+            }
+            setErrors(normalizeErrors(filteredErrors));
           }
         }}
-        render={({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-          touched,
-          errors
-        }) => (
-          <AddChannelModal
-            open={open}
-            onClose={onClose}
-            values={values}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            touched={touched}
-            errors={errors}
-          />
-        )}
+        render={formikProps => <AddChannelModal open={open} onClose={onClose} {...formikProps} />}
       />
     )}
   </Mutation>

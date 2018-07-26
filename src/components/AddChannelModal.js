@@ -15,9 +15,16 @@ const AddChannelModal = ({
   handleChange,
   handleBlur,
   handleSubmit,
-  isSubmitting
+  isSubmitting,
+  resetForm
 }) => (
-  <Modal open={open} onClose={onClose}>
+  <Modal
+    open={open}
+    onClose={e => {
+      resetForm();
+      onClose(e);
+    }}
+  >
     <Modal.Header>
 Add Channel
     </Modal.Header>
@@ -35,7 +42,15 @@ Add Channel
         </Form.Field>
 
         <Form.Group widths="equal">
-          <Button fluid disabled={isSubmitting} onClick={onClose} type="submit">
+          <Button
+            fluid
+            disabled={isSubmitting}
+            onClick={e => {
+              resetForm();
+              onClose(e);
+            }}
+            type="submit"
+          >
             Cancel
           </Button>
           <Button fluid disabled={isSubmitting} onClick={handleSubmit} type="submit">
@@ -84,19 +99,7 @@ export default ({ open, onClose, teamId }) => (
           onClose();
           setSubmitting(false);
         }}
-        render={({
-          values, handleChange, handleBlur, handleSubmit, isSubmitting
-        }) => (
-          <AddChannelModal
-            open={open}
-            onClose={onClose}
-            values={values}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        render={formikProps => <AddChannelModal open={open} onClose={onClose} {...formikProps} />}
       />
     )}
   </Mutation>

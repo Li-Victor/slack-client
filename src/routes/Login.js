@@ -32,7 +32,7 @@ const Login = observer(({ loginUser, history }) => {
     if (ok) {
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);
-      history.push('/');
+      history.push('/view-team');
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {
