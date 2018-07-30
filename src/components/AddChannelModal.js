@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  Button, Form, Modal, Input
+  Button, Checkbox, Form, Modal, Input
 } from 'semantic-ui-react';
 import { Formik } from 'formik';
 import { Mutation } from 'react-apollo';
 import findIndex from 'lodash/findIndex';
 
 import { ME_QUERY, CREATE_CHANNEL_MUTATION } from '../graphql/team';
+import MultiSelectUsers from './MultiSelectUsers';
 
 const AddChannelModal = ({
   open,
@@ -16,7 +17,9 @@ const AddChannelModal = ({
   handleBlur,
   handleSubmit,
   isSubmitting,
-  resetForm
+  resetForm,
+  teamId,
+  setFieldValue
 }) => (
   <Modal
     open={open}
@@ -40,6 +43,26 @@ Add Channel
             placeholder="Channel name"
           />
         </Form.Field>
+
+        <Form.Field>
+          <Checkbox
+            value={!values.public}
+            label="Private"
+            onChange={(e, { checked }) => setFieldValue('public', !checked)}
+            toggle
+          />
+        </Form.Field>
+
+        {!values.public && (
+          <Form.Field>
+            <MultiSelectUsers
+              value={values.members}
+              handleChange={(e, { value }) => setFieldValue('members', value)}
+              teamId={teamId}
+              placeholder="select members to invite"
+            />
+          </Form.Field>
+        )}
 
         <Form.Group widths="equal">
           <Button
@@ -67,11 +90,18 @@ export default ({ open, onClose, teamId }) => (
     {createChannel => (
       <Formik
         initialValues={{
-          name: ''
+          name: '',
+          public: true,
+          members: []
         }}
         onSubmit={async (values, { setSubmitting }) => {
           await createChannel({
-            variables: { teamId, name: values.name },
+            variables: {
+              teamId,
+              name: values.name,
+              public: values.public,
+              members: values.members
+            },
             optimisticResponse: {
               createChannel: {
                 __typename: 'Mutation',
@@ -99,7 +129,9 @@ export default ({ open, onClose, teamId }) => (
           onClose();
           setSubmitting(false);
         }}
-        render={formikProps => <AddChannelModal open={open} onClose={onClose} {...formikProps} />}
+        render={formikProps => (
+          <AddChannelModal open={open} onClose={onClose} {...formikProps} teamId={teamId} />
+        )}
       />
     )}
   </Mutation>
