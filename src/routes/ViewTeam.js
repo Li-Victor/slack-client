@@ -66,7 +66,6 @@ export default ({
       const channelIdInteger = parseInt(channelId, 10);
       const channelIdx = channelIdInteger ? findIndex(team.channels, ['id', channelIdInteger]) : 0;
       const channel = channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
-      console.log(currentUserId);
 
       return <ViewTeam team={team} teams={teams} username={username} channel={channel} currentUserId={currentUserId} />;
     }}

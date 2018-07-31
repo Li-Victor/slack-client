@@ -58,12 +58,12 @@ const channel = ({ id, name }, teamId) => (
   </Link>
 );
 
-const user = ({ id, username }, teamId) => (
+const dmChannel = ({ id, name }, teamId) => (
   <SideBarListItem key={`user-${id}`}>
     <Link to={`/view-team/user/${teamId}/${id}`}>
       <Bubble />
       {' '}
-      {username}
+      {name}
     </Link>
   </SideBarListItem>
 );
@@ -72,7 +72,7 @@ export default ({
   teamName,
   username,
   channels,
-  users,
+  dmChannels,
   onAddChannelClick,
   teamId,
   onInvitePeopleClick,
@@ -105,7 +105,7 @@ export default ({
           {' '}
           <Icon name="add circle" onClick={onDirectMessageCick} />
         </SideBarListHeader>
-        {users.map(u => user(u, teamId))}
+        {dmChannels.map(dmC => dmChannel(dmC, teamId))}
       </SideBarList>
     </React.Fragment>
 

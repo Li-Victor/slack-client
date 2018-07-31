@@ -32,6 +32,17 @@ class Sidebar extends React.Component {
     const { teams, team, username, currentUserId } = this.props;
     const { openAddChannelModal, openInvitePeopleModal, openDirectMessageModal } = this.state;
 
+    const regularChannels = [];
+    const dmChannels = [];
+
+    team.channels.forEach((c) => {
+      if (c.dm) {
+        dmChannels.push(c);
+      } else {
+        regularChannels.push(c);
+      }
+    });
+
     return (
       <React.Fragment>
         <Teams
@@ -44,7 +55,7 @@ class Sidebar extends React.Component {
           username={username}
           teamId={team.id}
           channels={team.channels}
-          users={team.directMessageMembers}
+          dmChannels={dmChannels}
           onAddChannelClick={this.toggleAddChannelModal}
           onInvitePeopleClick={this.toggleInvitePeopleModal}
           onDirectMessageCick={this.toggleDirectMessageModal}
@@ -67,6 +78,7 @@ class Sidebar extends React.Component {
           open={openDirectMessageModal}
           teamId={team.id}
           onClose={this.toggleDirectMessageModal}
+          currentUserId={currentUserId}
         />
       </React.Fragment>
     );

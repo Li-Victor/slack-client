@@ -16,6 +16,7 @@ export const ME_QUERY = gql`
         channels {
           id
           name
+          dm
         }
       }
     }
@@ -191,5 +192,11 @@ export const NEW_DIRECTMESSAGE_SUBSCRIPTION = gql`
       text
       created_at
     }
+  }
+`;
+
+export const GET_OR_CREATECHANNEL_MUTATION = gql`
+  mutation getOrCreateChannel($teamId: Int!, $members: [Int!]!) {
+    getOrCreateChannel(teamId: $teamId, members: $members)
   }
 `;
