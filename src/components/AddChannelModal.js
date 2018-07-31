@@ -47,7 +47,7 @@ Add Channel
 
         <Form.Field>
           <Checkbox
-            value={!values.public}
+            checked={!values.public}
             label="Private"
             onChange={(e, { checked }) => setFieldValue('public', !checked)}
             toggle
@@ -74,11 +74,10 @@ Add Channel
               resetForm();
               onClose(e);
             }}
-            type="submit"
           >
             Cancel
           </Button>
-          <Button fluid disabled={isSubmitting} onClick={handleSubmit} type="submit">
+          <Button fluid disabled={isSubmitting} onClick={handleSubmit}>
             Create Channel
           </Button>
         </Form.Group>

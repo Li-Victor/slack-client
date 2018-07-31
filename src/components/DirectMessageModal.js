@@ -42,11 +42,12 @@ Direct Messaging
             resetForm();
             onClose(e);
           }}
+          type="button"
         >
           Cancel
         </Button>
 
-        <Button disabled={isSubmitting} fluid onClick={handleSubmit}>
+        <Button disabled={isSubmitting} fluid onClick={handleSubmit} type="button">
           Start Messaging
         </Button>
       </Form>
@@ -62,7 +63,7 @@ export default withRouter(({
       <Formik
         initialValues={{ members: [] }}
         onSubmit={async ({ members }, { resetForm }) => {
-          const response = await getOrCreateChannel({
+          await getOrCreateChannel({
             variables: {
               members,
               teamId
@@ -83,12 +84,11 @@ export default withRouter(({
                 });
                 store.writeQuery({ query: ME_QUERY, data });
               }
+              history.push(`/view-team/${teamId}/${id}`);
+              onClose();
+              resetForm();
             }
           });
-
-          console.log(response);
-          onClose();
-          resetForm();
         }}
         render={formikProps => (
           <DirectMessageModal
