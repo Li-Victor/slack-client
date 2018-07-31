@@ -5,14 +5,13 @@ import { Query } from 'react-apollo';
 import { GET_TEAMMEMBERS_QUERY } from '../graphql/team';
 
 const MultiSelectUsers = ({
-  value, placeholder, teamId, handleChange
+  value, placeholder, teamId, handleChange, currentUserId
 }) => (
   <Query query={GET_TEAMMEMBERS_QUERY} variables={{ teamId }}>
     {({ loading, error, data }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
       const { getTeamMembers } = data;
-
       return (
         <Dropdown
           value={value}
@@ -22,7 +21,9 @@ const MultiSelectUsers = ({
           multiple
           search
           selection
-          options={getTeamMembers.map(tm => ({ key: tm.id, value: tm.id, text: tm.username }))}
+          options={getTeamMembers
+            .filter(tm => tm.id !== currentUserId)
+            .map(tm => ({ key: tm.id, value: tm.id, text: tm.username }))}
         />
       );
     }}

@@ -19,7 +19,8 @@ const AddChannelModal = ({
   isSubmitting,
   resetForm,
   teamId,
-  setFieldValue
+  setFieldValue,
+  currentUserId
 }) => (
   <Modal
     open={open}
@@ -60,6 +61,7 @@ Add Channel
               handleChange={(e, { value }) => setFieldValue('members', value)}
               teamId={teamId}
               placeholder="select members to invite"
+              currentUserId={currentUserId}
             />
           </Form.Field>
         )}
@@ -85,7 +87,9 @@ Add Channel
   </Modal>
 );
 
-export default ({ open, onClose, teamId }) => (
+export default ({
+  open, onClose, teamId, currentUserId
+}) => (
   <Mutation mutation={CREATE_CHANNEL_MUTATION}>
     {createChannel => (
       <Formik
@@ -130,7 +134,13 @@ export default ({ open, onClose, teamId }) => (
           setSubmitting(false);
         }}
         render={formikProps => (
-          <AddChannelModal open={open} onClose={onClose} {...formikProps} teamId={teamId} />
+          <AddChannelModal
+            open={open}
+            onClose={onClose}
+            {...formikProps}
+            teamId={teamId}
+            currentUserId={currentUserId}
+          />
         )}
       />
     )}

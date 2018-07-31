@@ -29,7 +29,7 @@ class Sidebar extends React.Component {
   };
 
   render() {
-    const { teams, team, username } = this.props;
+    const { teams, team, username, currentUserId } = this.props;
     const { openAddChannelModal, openInvitePeopleModal, openDirectMessageModal } = this.state;
 
     return (
@@ -56,6 +56,7 @@ class Sidebar extends React.Component {
           open={openAddChannelModal}
           teamId={team.id}
           onClose={this.toggleAddChannelModal}
+          currentUserId={currentUserId}
         />
         <InvitePeopleModal
           open={openInvitePeopleModal}

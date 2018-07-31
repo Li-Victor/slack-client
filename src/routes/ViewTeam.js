@@ -11,7 +11,7 @@ import MessageContainer from '../containers/MessageContainer';
 import { ME_QUERY, CREATE_MESSAGE_MUTATION } from '../graphql/team';
 
 const ViewTeam = ({
-  team, teams, username, channel
+  team, teams, username, channel, currentUserId
 }) => (
   <Mutation mutation={CREATE_MESSAGE_MUTATION}>
     {createMessage => (
@@ -23,6 +23,7 @@ const ViewTeam = ({
           }))}
           team={team}
           username={username}
+          currentUserId={currentUserId}
         />
         {channel && (
           <React.Fragment>
@@ -52,7 +53,7 @@ export default ({
       if (error) return `Error! ${error.message}`;
 
       const { me } = data;
-      const { teams, username } = me;
+      const { teams, username, id: currentUserId } = me;
 
       if (teams.length === 0) {
         return <Redirect to="/create-team" />;
@@ -65,8 +66,9 @@ export default ({
       const channelIdInteger = parseInt(channelId, 10);
       const channelIdx = channelIdInteger ? findIndex(team.channels, ['id', channelIdInteger]) : 0;
       const channel = channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
+      console.log(currentUserId);
 
-      return <ViewTeam team={team} teams={teams} username={username} channel={channel} />;
+      return <ViewTeam team={team} teams={teams} username={username} channel={channel} currentUserId={currentUserId} />;
     }}
   </Query>
 );
