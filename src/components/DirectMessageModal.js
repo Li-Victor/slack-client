@@ -3,8 +3,9 @@ import { Button, Form, Modal } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { Formik } from 'formik';
+import findIndex from 'lodash/findIndex';
 
-import { GET_OR_CREATECHANNEL_MUTATION } from '../graphql/team';
+import { GET_OR_CREATECHANNEL_MUTATION, ME_QUERY } from '../graphql/team';
 import MultiSelectUsers from './MultiSelectUsers';
 
 const DirectMessageModal = ({
@@ -21,7 +22,7 @@ const DirectMessageModal = ({
 }) => (
   <Modal open={open} onClose={onClose}>
     <Modal.Header>
-Add Channel
+Direct Messaging
     </Modal.Header>
     <Modal.Content>
       <Form>
@@ -60,16 +61,34 @@ export default withRouter(({
     {getOrCreateChannel => (
       <Formik
         initialValues={{ members: [] }}
-        onSubmit={async ({ members }, { setSubmitting }) => {
+        onSubmit={async ({ members }, { resetForm }) => {
           const response = await getOrCreateChannel({
             variables: {
               members,
               teamId
+            },
+            update: (store, { data: { getOrCreateChannel } }) => {
+              const { id, name } = getOrCreateChannel;
+              const data = store.readQuery({ query: ME_QUERY });
+              const teamIdx = findIndex(data.me.teams, ['id', teamId]);
+
+              const notInChannelList = data.me.teams[teamIdx].channels.every(c => c.id !== id);
+
+              if (notInChannelList) {
+                data.me.teams[teamIdx].channels.push({
+                  __typename: 'Channel',
+                  id,
+                  name,
+                  dm: true
+                });
+                store.writeQuery({ query: ME_QUERY, data });
+              }
             }
           });
+
           console.log(response);
           onClose();
-          setSubmitting(false);
+          resetForm();
         }}
         render={formikProps => (
           <DirectMessageModal

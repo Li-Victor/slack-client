@@ -11,7 +11,7 @@ const MultiSelectUsers = ({
     {({ loading, error, data }) => {
       if (loading) return null;
       if (error) return `Error! ${error.message}`;
-      const { getTeamMembers } = data;
+      const { getTeamMembers = [] } = data;
       return (
         <Dropdown
           value={value}

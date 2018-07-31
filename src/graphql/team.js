@@ -197,6 +197,9 @@ export const NEW_DIRECTMESSAGE_SUBSCRIPTION = gql`
 
 export const GET_OR_CREATECHANNEL_MUTATION = gql`
   mutation getOrCreateChannel($teamId: Int!, $members: [Int!]!) {
-    getOrCreateChannel(teamId: $teamId, members: $members)
+    getOrCreateChannel(teamId: $teamId, members: $members) {
+      id
+      name
+    }
   }
 `;
