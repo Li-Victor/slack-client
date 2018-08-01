@@ -112,7 +112,8 @@ export default ({
                 channel: {
                   __typename: 'Channel',
                   id: -1,
-                  name: values.name
+                  name: values.name,
+                  dm: false
                 }
               }
             },

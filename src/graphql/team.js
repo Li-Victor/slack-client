@@ -30,6 +30,7 @@ export const CREATE_CHANNEL_MUTATION = gql`
       channel {
         id
         name
+        dm
       }
     }
   }
@@ -49,8 +50,8 @@ export const NEW_CHANNEL_SUBSCRIPTION = gql`
 `;
 
 export const MESSAGES_QUERY = gql`
-  query messages($channelId: Int!) {
-    messages(channelId: $channelId) {
+  query messages($offset: Int!, $channelId: Int!) {
+    messages(offset: $offset, channelId: $channelId) {
       id
       text
       user {
