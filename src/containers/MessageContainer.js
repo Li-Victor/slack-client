@@ -1,62 +1,99 @@
 import React from 'react';
 import { Query } from 'react-apollo';
-import { Button, Comment } from 'semantic-ui-react';
+import { Comment } from 'semantic-ui-react';
 
 import { NEW_CHANNEL_SUBSCRIPTION, MESSAGES_QUERY } from '../graphql/team';
-import Messages from '../components/Messages';
 
 class MessageContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    const { subscribeToNewMessages } = this.props;
-    this.state = {
-      unsubscribe: (() => subscribeToNewMessages())(),
-      hasMoreItems: true
-    };
+  state = {
+    hasMoreItems: true
+  };
+
+  componentWillMount() {
+    const { channelId, subscribeToNewMessages } = this.props;
+    this.unsubscribe = subscribeToNewMessages(channelId);
   }
 
-  componentWillUnmount() {
-    const { unsubscribe } = this.state;
-    if (unsubscribe) {
-      unsubscribe();
+  componentWillReceiveProps({ messages: nextPropMessages, channelId: nextPropsChannelId }) {
+    const { channelId, messages, subscribeToNewMessages } = this.props;
+    if (channelId !== nextPropsChannelId) {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+      }
+      this.unsubscribe = subscribeToNewMessages(channelId);
+    }
+
+    if (
+      this.scroller
+      && this.scroller.scrollTop < 100
+      && messages
+      && nextPropMessages
+      && messages.length !== nextPropMessages.length
+    ) {
+      // 35 items
+      const heightBeforeRender = this.scroller.scrollHeight;
+      // wait for 70 items to render
+      setTimeout(() => {
+        if (this.scroller) {
+          this.scroller.scrollTop = this.scroller.scrollHeight - heightBeforeRender;
+        }
+      }, 120);
     }
   }
 
-  render() {
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  handleScroll = () => {
     const { hasMoreItems } = this.state;
-    const { messages, channelId, fetchMore } = this.props;
+    const { fetchMore, channelId, messages } = this.props;
+
+    if (this.scroller && this.scroller.scrollTop < 100 && hasMoreItems && messages.length >= 15) {
+      fetchMore({
+        variables: {
+          channelId,
+          cursor: messages[messages.length - 1].created_at
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult) {
+            return previousResult;
+          }
+
+          if (fetchMoreResult.messages.length < 15) {
+            this.setState({ hasMoreItems: false });
+          }
+
+          return {
+            ...previousResult,
+            messages: [...previousResult.messages, ...fetchMoreResult.messages]
+          };
+        }
+      });
+    }
+  };
+
+  render() {
+    const { messages } = this.props;
     return (
-      <Messages key={channelId}>
+      <div
+        style={{
+          gridColumn: 3,
+          gridRow: 2,
+          paddingLeft: '20px',
+          paddingRight: '20px',
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          overflowY: 'auto'
+        }}
+        onScroll={this.handleScroll}
+        ref={scroller => {
+          this.scroller = scroller;
+        }}
+      >
         <Comment.Group>
-          {hasMoreItems
-            && messages.length >= 5 && (
-              <Button
-                onClick={() => {
-                  fetchMore({
-                    variables: {
-                      channelId,
-                      cursor: messages[messages.length - 1].created_at
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                      if (!fetchMoreResult) {
-                        return previousResult;
-                      }
-
-                      if (fetchMoreResult.messages.length < 5) {
-                        this.setState({ hasMoreItems: false });
-                      }
-
-                      return {
-                        ...previousResult,
-                        messages: [...previousResult.messages, ...fetchMoreResult.messages]
-                      };
-                    }
-                  });
-                }}
-              >
-                Load more
-              </Button>
-          )}
           {messages
             .slice()
             .reverse()
@@ -83,7 +120,7 @@ Reply
               </Comment>
             ))}
         </Comment.Group>
-      </Messages>
+      </div>
     );
   }
 }
