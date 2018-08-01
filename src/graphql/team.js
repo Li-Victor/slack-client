@@ -50,8 +50,8 @@ export const NEW_CHANNEL_SUBSCRIPTION = gql`
 `;
 
 export const MESSAGES_QUERY = gql`
-  query messages($offset: Int!, $channelId: Int!) {
-    messages(offset: $offset, channelId: $channelId) {
+  query messages($cursor: String, $channelId: Int!) {
+    messages(cursor: $cursor, channelId: $channelId) {
       id
       text
       user {

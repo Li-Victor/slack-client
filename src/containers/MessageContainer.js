@@ -28,34 +28,34 @@ class MessageContainer extends React.Component {
     return (
       <Messages key={channelId}>
         <Comment.Group>
-          {hasMoreItems && (
-            <Button
-              onClick={() => {
-                fetchMore({
-                  variables: {
-                    channelId,
-                    offset: messages.length
-                  },
-                  updateQuery: (previousResult, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) {
-                      return previousResult;
-                    }
-                    console.log(fetchMoreResult);
+          {hasMoreItems
+            && messages.length >= 5 && (
+              <Button
+                onClick={() => {
+                  fetchMore({
+                    variables: {
+                      channelId,
+                      cursor: messages[messages.length - 1].created_at
+                    },
+                    updateQuery: (previousResult, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) {
+                        return previousResult;
+                      }
 
-                    if (fetchMoreResult.messages.length < 5) {
-                      this.setState({ hasMoreItems: false });
-                    }
+                      if (fetchMoreResult.messages.length < 5) {
+                        this.setState({ hasMoreItems: false });
+                      }
 
-                    return {
-                      ...previousResult,
-                      messages: [...previousResult.messages, ...fetchMoreResult.messages]
-                    };
-                  }
-                });
-              }}
-            >
-              Load more
-            </Button>
+                      return {
+                        ...previousResult,
+                        messages: [...previousResult.messages, ...fetchMoreResult.messages]
+                      };
+                    }
+                  });
+                }}
+              >
+                Load more
+              </Button>
           )}
           {messages
             .slice()
@@ -89,7 +89,7 @@ Reply
 }
 
 export default ({ channelId }) => (
-  <Query query={MESSAGES_QUERY} variables={{ channelId, offset: 0 }} fetchPolicy="network-only">
+  <Query query={MESSAGES_QUERY} variables={{ channelId }} fetchPolicy="network-only">
     {({
       loading, error, data, subscribeToMore, fetchMore
     }) => {
